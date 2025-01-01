@@ -1,0 +1,10 @@
+name = "MolecularDynamics"
+uuid = "e2e92ba9-a113-48d1-b5c7-cf030cf4cd5b"
+authors = ["Hitoshi Wako <Hitoshi.Wako@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[compat]
+LinearAlgebra = "1.11.0"
