@@ -6,38 +6,6 @@ using LinearAlgebra
 Pkg.activate("MolecularDynamics")
 using MolecularDynamics
 
-function calc_acc(func,ps,fixs,bound,cutoff=8)
-    alls =vcat(ps,fixs)
-    accs = []
-    for p1 in ps
-        acc = zeros(size(p1.x))
-        for  p2 in alls
-            if p1 != p2 
-                if norm(p1.x-p2.x) < cutoff
-                    acc += func(norm(p1.x-p2.x))/p1.m*(p1.x-p2.x)/norm(p1.x-p2.x)
-                elseif norm(p1.x-p2.x-[bound,0.0]) < cutoff
-                    acc += func(norm(p1.x-p2.x-[bound,0.0]))/p1.m*(p1.x-p2.x-[bound,0.0])/norm(p1.x-p2.x-[bound,0.0])
-                elseif norm(p1.x-p2.x+[bound,0.0]) < cutoff
-                    acc += func(norm(p1.x-p2.x+[bound,0.0]))/p1.m*(p1.x-p2.x+[bound,0.0])/norm(p1.x-p2.x+[bound,0.0])
-                end
-            end
-        end
-        push!(accs,acc)
-    end
-    return accs
-end
-
-function fold!(ps,bound)
-    for p in ps
-        if p.x[1] > bound
-            p.x[1] -= bound
-        elseif p.x[1] < 0
-            p.x[1] += bound
-        end
-    end
-    return ps
-end
-
 σ = .340
 ϵ = 1.67
 m = 66.34 # 10-27kg
@@ -68,10 +36,10 @@ anim =Animation()
         plot!(fxs,fys,st=:scatter,label="")
         frame(anim,plt)
     end
-    accs = calc_acc(lennardjones_force,ps,fixs,col*λ/σ,3)
+    accs = calc_acc(lennardjones_force,ps,fixs,(0.0,col*λ/σ))
     update_x!(ps,accs,Δt)
-    fold!(ps,col*λ/σ)
-    accs_next =calc_acc(lennardjones_force,ps,fixs,col*λ/σ,3)
+    fold!(ps,(0.0,col*λ/σ))
+    accs_next =calc_acc(lennardjones_force,ps,fixs,(0.0,col*λ/σ))
     update_v!(ps,accs,accs_next,Δt)
 end
 gif(anim,"results/periodic.gif")

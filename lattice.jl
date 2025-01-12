@@ -5,7 +5,7 @@ using Printf
 Pkg.activate("MolecularDynamics")
 using MolecularDynamics
 
-σ = .340
+σ = 0.340
 ϵ = 1.67
 m = 66.34 # 10-27kg
 
@@ -16,8 +16,8 @@ m = 66.34 # 10-27kg
 n = 10000
 samp = 10
 
-row = 6
-col = 6
+row = 10
+col = 10
 ps = vec([Particle([(x-1)*λ/σ,(y-1)*λ/σ],[0.0,0.0],1.0) for x=1:col,y=1:row])
 
 anim =Animation()

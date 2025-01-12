@@ -5,7 +5,7 @@ using Printf
 Pkg.activate("MolecularDynamics")
 using MolecularDynamics
 
-σ = .340
+σ = 0.340
 ϵ = 1.67
 m = 66.34 # 10-27kg
 
@@ -18,7 +18,9 @@ samp = 10
 
 row = 10
 col = 10
-ps =[Particle([0.0,λ/σ],[0.0,-1.0*√(m/ϵ)],1.0)]
+v = 4.0
+
+ps =[Particle([0.0,5λ/σ],[0.0,-v*√(m/ϵ)],1.0)]
 append!(ps,vec([Particle([(x-(col+1)/2)*λ/σ,-(y-1.0)*√3λ/σ],[0.0,0.0],1.0) for x=1:col  ,y=1:div(row+1,2)]))
 append!(ps,vec([Particle([(x-col/2)*λ/σ,    -(y-0.5)*√3λ/σ],[0.0,0.0],1.0) for x=1:col-1,y=1:div(row  ,2)]))
 
@@ -28,7 +30,7 @@ anim =Animation()
         xs = [p.x[1]*σ for p in ps]
         ys = [p.x[2]*σ for p in ps]
         plt = plot(xs,ys,st=:scatter,label="",title=@sprintf("%3.1f ps",i*Δt*√(m*σ^2/ϵ)),
-                    xlabel="nm",ylabel="nm",xlims=(-λ*col/2,λ*col/2),ylims=(-λ*row,2λ),aspect_ratio=:equal)
+                    xlabel="nm",ylabel="nm",xlims=(-λ*col/2,λ*col/2),ylims=(-λ*row,6λ),aspect_ratio=:equal)
         frame(anim,plt)
     end
     accs = calc_acc(lennardjones_force,ps)

@@ -5,7 +5,7 @@ using Printf
 Pkg.activate("MolecularDynamics")
 using MolecularDynamics
 
-σ = .340
+σ = 0.340
 ϵ = 1.67
 m = 66.34 # 10-27kg
 

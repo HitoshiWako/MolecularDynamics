@@ -16,8 +16,8 @@ m = 66.34 # 10-27kg
 n = 10000
 samp = 10
 
-row = 5
-col = 5
+row = 10
+col = 10
 ps=[]
 append!(ps,vec([Particle([(x-1.0)*λ/σ,(y-1.0)*√3λ/σ],[0.0,0.0],1.0) for x=1:col  ,y=1:div(row+1,2)]))
 append!(ps,vec([Particle([(x-0.5)*λ/σ,(y-0.5)*√3λ/σ],[0.0,0.0],1.0) for x=1:col-1,y=1:div(row  ,2)]))
