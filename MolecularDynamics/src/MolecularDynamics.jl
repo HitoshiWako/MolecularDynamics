@@ -1,5 +1,5 @@
 module MolecularDynamics
-export Particle,lennardjones_potential,lennardjones_force,calc_acc,update_x!,update_v!,fold!
+export Particle,lennardjones_potential,lennardjones_force,calc_acc,update_x!,update_v!,fold!,calc_potential,calc_energy,isothermal!
 
 using LinearAlgebra
 
@@ -58,4 +58,39 @@ function fold!(ps,bound)
     return ps
 end
 
+function calc_potential(func,p,ps,bound=(0.0,0.0),cutoff=3)
+    u = 0
+    for p2 in ps
+        if p != p2 
+            if norm(p.x-p2.x) < cutoff
+                u += func(norm(p.x-p2.x))
+            elseif norm(p.x-p2.x-[bound[2]-bound[1],0.0]) < cutoff
+                u += func(norm(p.x-p2.x-[bound[2]-bound[1],0.0]))
+            elseif norm(p.x-p2.x+[bound[2]-bound[1],0.0]) < cutoff
+                u += func(norm(p.x-p2.x+[bound[2]-bound[1],0.0]))
+            end
+        end
+    end
+    return u
+end
+
+function calc_energy(func,ps,bound=(0.0,0.0),cutoff=3)
+    E = 0
+    for p in ps
+        k = 1/2*p.m*norm(p.v)^2
+        u = calc_potential(func,p,ps,bound,cutoff)
+        E += k+u
+    end
+    return E/length(ps)
+end
+function isothermal!(ps,fixs,t_s)
+    for p in ps
+        for fix in fixs
+            if norm(p.x - fix.x) < 1.5
+                p.v= p.v/norm(p.v)*√(3*t_s)
+                break
+            end
+        end
+    end
+end
 end # module MolecularDynamics
