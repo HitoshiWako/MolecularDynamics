@@ -16,12 +16,12 @@ m = 66.34 # 10-27 kg
 
 Δt = 0.01
 
-n = 15000
+n = 12000
 samp = 10
 interval = 1000
 
 row = 3
-col = 20
+col = 15
 
 v = 400
 
@@ -57,4 +57,4 @@ anim =Animation()
     update_v!(ps,accs,accs_next,Δt)
 
 end
-gif(anim,"results/deposition_3x20.gif")
+gif(anim,"results/deposition_3x15.gif")
