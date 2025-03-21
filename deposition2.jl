@@ -2,9 +2,12 @@
 using Pkg
 using Plots
 using Printf
+using LinearAlgebra
 
 Pkg.activate("MolecularDynamics")
 using MolecularDynamics
+
+kB = 1.380649e-2 # 10-21 J/K
 
 σ = 0.340 # 10-9 m [nm]
 ϵ = 1.67 # 10-21 J 
@@ -14,14 +17,14 @@ m = 66.34 # 10-27 kg
 
 Δt = 0.01
 
-n = 12000
+n = 11000
 samp = 10
 interval = 1000
 
 row = 3
 col = 15
 
-v = 400
+temp = 87.3 # K
 
 cos_rand() = asin(2*rand()-1)
 
@@ -34,16 +37,17 @@ anim =Animation()
 @time for i=0:n
     if i%interval == 0
         θ = cos_rand()-π/2
-        push!(ps,Particle([(rand()-0.5)*λ*col/σ,10λ/σ],[v*√(m/ϵ)*1e-3*cos(θ),v*√(m/ϵ)*1e-3*sin(θ)],1.0))
+        push!(ps,Particle([(rand()-0.5)*λ*col/σ,10λ/σ],[√(2kB*temp/ϵ)*cos(θ),√(2kB*temp/ϵ)*sin(θ)],1.0))
     end   
     if i%samp == 0
         xs = [p.x[1]*σ for p in ps]
         ys = [p.x[2]*σ for p in ps]
-        plt = plot(xs,ys,st=:scatter,label="",title=@sprintf("%3.1f ps",i*Δt*√(m*σ^2/ϵ)),
-                    xlabel="nm",ylabel="nm",xlims=(-λ*col/2,λ*col/2),ylims=(-λ*(row+1),12λ),aspect_ratio=:equal)
+        zs = [ϵ/(2kB)*norm(p.v)^2 for p in ps]
+        plt = plot(xs,ys,zcolor=zs,st=:scatter,label="",title=@sprintf("%3.1f ps",i*Δt*√(m*σ^2/ϵ)),
+                    xlabel="nm",ylabel="nm",xlims=(-λ*col/2,λ*col/2),ylims=(-λ*(row+1),12λ),clim=(0,100),aspect_ratio=:equal)
         fxs = [p.x[1]*σ for p in fixs]
         fys = [p.x[2]*σ for p in fixs]
-        plot!(fxs,fys,st=:scatter,label="")
+        plot!(fxs,fys,st=:scatter,c=:black,label="")
 
         frame(anim,plt)
     end
@@ -55,4 +59,5 @@ anim =Animation()
     update_v!(ps,accs,accs_next,Δt)
 
 end
-gif(anim,"results/deposition_3x15.gif")
+gif(anim,"results/deposition_Ar.gif")
+
